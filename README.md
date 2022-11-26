@@ -1,6 +1,6 @@
 # NATO Alphabet and Morse Code
 
-A short Python program that translates text both to the NATO Phonetic Alphabet and to Morse code. The Morse code is shown both visually as well as played in the speakers.
+A short Python program that translates text both to the NATO Phonetic Alphabet and to Morse code. The Morse code is shown both visually as well as played in the speakers. The NATO Phonetics of the text will aslo be spoken, using Windows Speach To Text engine.
 
 ### Example:
 
