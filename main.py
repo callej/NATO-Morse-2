@@ -1,5 +1,6 @@
 from winsound import Beep
 from time import sleep
+from win32com.client import Dispatch
 from symbols import SYMBOLS
 
 # ***   Text Properties   *** #
@@ -20,16 +21,26 @@ FREQ = 400
 
 def print_nato(text):
     print()
-    nato_string = ""
+    nato_show = ""
+    nato_word = ""
+    nato_speak = []
     spaced = False
     for c in text.strip():
         if c.lower() in SYMBOLS:
-            nato_string += BOLD + TXT + " " + SYMBOLS[c.lower()]["nato"] + " " + NORMAL
+            nato_show += BOLD + TXT + " " + SYMBOLS[c.lower()]["nato"] + " " + NORMAL
+            nato_word += " " + SYMBOLS[c.lower()]["nato"] + " "
             spaced = False
         if c.isspace() and not spaced:
-            nato_string += "   "
+            nato_show += "   "
+            nato_speak.append(nato_word.strip())
+            nato_word = ""
             spaced = True
-    print(nato_string.strip())
+    if not spaced and nato_word != "":
+        nato_speak.append(nato_word.strip())
+    print(nato_show.strip())
+    speak = Dispatch("SAPI.SpVoice")
+    for word in nato_speak:
+        speak.Speak(word)
 
 
 def send_code(symbol):
