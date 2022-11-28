@@ -1,5 +1,3 @@
-
-
 SYMBOLS = {
     "a": {
         "nato": "Alfa",
