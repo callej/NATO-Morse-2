@@ -36,13 +36,14 @@ SPEECH_FILE = "speach_tmp.mp3"
 def windows_voice(text):
     """
     Speaks the text with a male voice.
+
     The function uses the Windows Text To Speech Engine for converting the text string that is
     passed to the function.
     
-    Parameters:
-    -----------
-        text : str
-            The text that is converted to speech.
+    :param text: str :
+        The text that is converted to speech.
+
+    :return: Nothing is returned.
     """
     speak = Dispatch("SAPI.SpVoice")
     for word in text.split(PAUSE):
@@ -51,15 +52,16 @@ def windows_voice(text):
 
 def google_voice(text):
     """
-        Speaks the text with a female voice.
-        The function uses the Google Text To Speech Engine for converting the text string that is
-        passed to the function.
+    Speaks the text with a female voice.
 
-        Parameters:
-        -----------
-            text : str
-                The text that is converted to speech.
-        """
+    The function uses the Google Text To Speech Engine for converting the text string that is
+    passed to the function.
+
+    :param text: str :
+        The text that is converted to speech.
+
+    :return: Nothing is returned.
+    """
     gTTS(text, lang=LANG, tld=DIALECT, lang_check=LANG_CHECK, slow=SPEED).save(SPEECH_FILE)
     mixer.init()
     mixer.music.load(SPEECH_FILE)
@@ -70,6 +72,7 @@ def google_voice(text):
 def print_nato(text):
     """
     Prints and speaks the NATO Phonetics of the text.
+
     The function converts the text string that is passed to the function into NATO Phonetics.
     The Nato Phonetics is then printed on the screen and converted to speech sent to the speakers.
 
@@ -78,11 +81,10 @@ def print_nato(text):
     The speech can be turned off by setting the global parameter SPEAK to False. It is also possible to
     choose between a male or a female voice by setting the global parameter MALE to True or False.
 
+    :param text: str :
+        The text that is converted into NATO Phonetics.
 
-    Parameters:
-    -----------
-        text : str
-            The text that is converted into NATO Phonetics.
+    :return: Nothing is returned.
     """
     print()
     nato_show = ""
@@ -109,6 +111,18 @@ def print_nato(text):
 
 
 def send_code(symbol):
+    """
+    Converts the symbol string passed to sound sent to the speakers.
+
+    The parameter symbol is a string that consists only of dots and dashes. If the character is a dot it is converted
+    to s short beep. Otherwise, the character is converted to a long beep. The lengths of the beeps are configured by
+    the global parameters DOT, DASH, and DOT_DURATION.
+
+    :param symbol: str :
+            The text string of dots and dashes that is converted to short and long beeps.
+
+    :return: Nothing is returned.
+    """
     for sound in SYMBOLS[symbol.lower()]["morse"]:
         if sound == ".":
             Beep(FREQ, int(DOT * DOT_DURATION))
@@ -118,6 +132,14 @@ def send_code(symbol):
 
 
 def send_morse(text):
+    """
+    Converts the text to Morse code and plays it in the speakers.
+
+    :param text: str,
+        The text string that is being converted to Morse code.
+
+    :return: Nothing is returned.
+    """
     if PLAY_MORSE:
         print()
         spaced = False
@@ -134,6 +156,11 @@ def send_morse(text):
 
 
 def main():
+    """
+    Asks for a word or phrase, converts it to NATO Phonetics and Morse Code, displays the result on the screen and
+    plays it in the speakers.
+    :return: Nothing is returned.
+    """
     text = input("Enter a word or a phrase: ")
     print_nato(text)
     send_morse(text)
