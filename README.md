@@ -20,3 +20,9 @@ Properties that decide if the phonetics should be played, which voice to use, wh
 ### Example:
 
 <img width="602" alt="image" src="https://user-images.githubusercontent.com/1498298/204062001-c11fda2c-866a-4866-b2f6-6d66f2669298.png">
+
+<br/>
+
+### Architecture
+
+The program is split into two parts. All the logic is in the main.py file. All the data that is used to produce the correct phonetics and the correct Morse letters is stored in a dictionary in the symbols.py file. Add new characters or removing characters only requires to enter or remove entries in the dictionary. No logic need to be changed, meaning no change is required in the main.py file. 
