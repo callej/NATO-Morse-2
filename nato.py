@@ -7,8 +7,8 @@ from symbols import SYMBOLS
 
 
 # ***   Text Properties   *** #
-BOLD = "\x1b[1m"
-TXT = "\x1b[38;2;0;0;210;48;2;212;175;55m"
+EMPHASIS = "\x1b[1m"
+COLOR = "\x1b[38;2;0;0;210;48;2;212;175;55m"
 NORMAL = "\x1b[m"
 
 # ***   Speech Properties   *** #
@@ -81,7 +81,7 @@ def print_nato(text):
     spaced = False
     for c in text.strip():
         if c.lower() in SYMBOLS:
-            nato_show += BOLD + TXT + " " + SYMBOLS[c.lower()]["nato"] + " " + NORMAL
+            nato_show += EMPHASIS + COLOR + " " + SYMBOLS[c.lower()]["nato"] + " " + NORMAL
             nato_speak += " " + SYMBOLS[c.lower()]["nato"] + " "
             spaced = False
         if c.isspace() and not spaced:
