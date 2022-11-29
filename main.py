@@ -68,6 +68,16 @@ def google_voice(text):
 
 
 def print_nato(text):
+    """
+    Prints and speaks the NATO Phonetics of the text.
+    The function converts the text string that is passed to the function into NATO Phonetics.
+    The Nato Phonetics is then printed on the screen and converted to speech sent to the speakers.
+    
+    Parameters:
+    -----------
+        text : str
+            The text that is converted into NATO Phonetics.
+    """
     print()
     nato_show = ""
     nato_speak = ""
