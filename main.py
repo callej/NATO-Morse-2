@@ -34,6 +34,16 @@ SPEECH_FILE = "speach_tmp.mp3"
 
 
 def windows_voice(text):
+    """
+    Speaks the text with a male voice.
+    The function uses the Windows Text To Speech Engine for converting the text string that is
+    passed to the function.
+    
+    Parameters:
+    -----------
+        text : str
+            The text that is converted to speech.
+    """
     speak = Dispatch("SAPI.SpVoice")
     for word in text.split(PAUSE):
         speak.Speak(word)
