@@ -72,7 +72,13 @@ def print_nato(text):
     Prints and speaks the NATO Phonetics of the text.
     The function converts the text string that is passed to the function into NATO Phonetics.
     The Nato Phonetics is then printed on the screen and converted to speech sent to the speakers.
-    
+
+    When the NATO Phonetics is printed on the screen, colors and formatting of the text and background
+    can be configured by the BOLD and TEXT global parameters.
+    The speech can be turned off by setting the global parameter SPEAK to False. It is also possible to
+    choose between a male or a female voice by setting the global parameter MALE to True or False.
+
+
     Parameters:
     -----------
         text : str
