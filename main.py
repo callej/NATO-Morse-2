@@ -50,6 +50,16 @@ def windows_voice(text):
 
 
 def google_voice(text):
+    """
+        Speaks the text with a female voice.
+        The function uses the Google Text To Speech Engine for converting the text string that is
+        passed to the function.
+
+        Parameters:
+        -----------
+            text : str
+                The text that is converted to speech.
+        """
     gTTS(text, lang=LANG, tld=DIALECT, lang_check=LANG_CHECK, slow=SPEED).save(SPEECH_FILE)
     mixer.init()
     mixer.music.load(SPEECH_FILE)
