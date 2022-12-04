@@ -33,5 +33,4 @@ The program is split into two parts. All the logic is in the main.py file. All t
 
 Below is the first draft of a possible GUI for this app:
 
-<img width="977" alt="image" src="https://user-images.githubusercontent.com/1498298/205520936-72dcb22b-87ea-457f-8184-ce306ad55c72.png">
-
+<img width="977" alt="image" src="https://user-images.githubusercontent.com/1498298/205522157-33ff7069-ff1c-46d1-9cae-e0d6e2e87ca5.png">
