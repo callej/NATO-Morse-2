@@ -313,13 +313,13 @@ class App(ck.CTk):
         self.mt_entry = ck.StringVar(value=str(self.tone.get()))
         self.mtone_entry = ck.CTkEntry(master=self.morse_frame, placeholder_text=str(self.tone.get()), width=50,
                                        textvariable=self.mt_entry, justify=ck.CENTER)
-        self.mtone_entry.grid(row=9, column=2, sticky="ne", padx=0, pady=(5, 10))
+        self.mtone_entry.grid(row=9, column=2, sticky="ne", padx=0, pady=(5, 20))
 
         self.tone_set_button = ck.CTkButton(master=self.morse_frame, text="Set", width=50, command=self.set_tone)
-        self.tone_set_button.grid(row=9, column=3, sticky="nw", padx=(5, 0), pady=(5, 10))
+        self.tone_set_button.grid(row=9, column=3, sticky="nw", padx=(5, 0), pady=(5, 20))
 
+        # ***** -----   Set initial state   ----- ***** #
         self.reset()
-
         ck.set_appearance_mode("System")
         ck.set_default_color_theme("blue")
 
