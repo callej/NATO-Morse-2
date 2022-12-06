@@ -30,8 +30,8 @@ The program is split into several parts.
 * All the logic and functionality for the Morse part is in the morse.py file.
 * All the data that is used to produce the correct phonetics and the correct Morse letters is stored in a dictionary in the symbols.py file. Add new characters or removing characters only requires to enter or remove entries in the dictionary. No logic need to be changed.
 * The app itlsef can then use the resources from the other modules.
-* There is a fully functional command-line app using this architecture in the filenm_cmd.py
-* A GUI app is being developed with the core GUI in nm_win.py
+* There is a fully functional command-line app using this architecture in the file nm_cmd.py
+* A GUI app is being developed, using this architecture, with the core GUI functionality in nm_win.py
 
 <br/>
 
