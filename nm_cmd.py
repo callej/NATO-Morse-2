@@ -1,4 +1,4 @@
-from nato import print_nato
+from nato import convert_to_nato, speak_nato
 from morse import send_morse
 
 
@@ -9,7 +9,8 @@ def main():
     :return: Nothing is returned.
     """
     text = input("Enter a word or a phrase: ")
-    print_nato(text)
+    print(convert_to_nato(text, "formatted"))
+    speak_nato(text)
     send_morse(text)
 
 
