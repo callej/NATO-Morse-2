@@ -2,7 +2,7 @@
 
 A short Python program that translates text both to the NATO Phonetic Alphabet and to Morse code. The Morse code is shown both visually as well as played in the speakers. The NATO Phonetics of the text will aslo be spoken. 
 
-It is possible to choose the spoken voice to be either a male voice or a female voice. The male voice is using Windows Speach To Text Engine. The female voice is using Google Speech To Text Engine. Which voice to use is configured in the Speech Properties section near the top of the main.py file. 
+It is possible to choose the spoken voice to be either a male voice or a female voice. The male voice is using Windows Speach To Text Engine. The female voice is using Google Speech To Text Engine. Which voice to use is configured in the Speech Properties section near the top of the nato.py file. 
 
 Most of the look and behavior of this program can be configured by changing the values of some configuration constants at the top of the nato.py and morse.py files. They are organized in the following sections:
 
