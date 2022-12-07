@@ -5,7 +5,6 @@ from pygame import mixer
 from time import sleep
 from symbols import SYMBOLS
 
-
 # ***   Text Properties   *** #
 EMPHASIS = "\x1b[1m"
 COLOR = "\x1b[38;2;0;0;210;48;2;212;175;55m"
@@ -21,6 +20,57 @@ SPEED = False
 PAUSE = ","
 SPEECH_FILE = "speach_tmp.mp3"
 
+# ***   Configuration Dictionaries   *** #
+text_config = {
+    "emphasis": {
+        "default": EMPHASIS,
+        "current": EMPHASIS
+    },
+    "color": {
+        "default": COLOR,
+        "current": COLOR
+    },
+    "normal": {
+        "default": NORMAL,
+        "current": NORMAL
+    }
+}
+
+speech_config = {
+    "speak": {
+        "default": SPEAK,
+        "current": SPEAK
+    },
+    "male": {
+        "default": MALE,
+        "current": MALE
+    },
+    "lang": {
+        "default": LANG,
+        "current": LANG
+    },
+    "dialect": {
+        "default": DIALECT,
+        "current": DIALECT
+    },
+    "lang_check": {
+        "default": LANG_CHECK,
+        "current": LANG_CHECK
+    },
+    "speed": {
+        "default": SPEED,
+        "current": SPEED
+    },
+    "pause": {
+        "default": PAUSE,
+        "current": PAUSE
+    },
+    "speech_file": {
+        "default": SPEECH_FILE,
+        "current": SPEECH_FILE
+    }
+}
+
 
 def windows_voice(text):
     """
@@ -35,7 +85,7 @@ def windows_voice(text):
     :return: Nothing is returned.
     """
     speak = Dispatch("SAPI.SpVoice")
-    for word in text.split(PAUSE):
+    for word in text.split(speech_config["pause"]["current"]):
         speak.Speak(word)
 
 
@@ -51,11 +101,15 @@ def google_voice(text):
 
     :return: Nothing is returned.
     """
-    gTTS(text, lang=LANG, tld=DIALECT, lang_check=LANG_CHECK, slow=SPEED).save(SPEECH_FILE)
+    gTTS(text,
+         lang=speech_config["lang"]["current"],
+         tld=speech_config["dialect"]["current"],
+         lang_check=speech_config["lang_check"]["current"],
+         slow=speech_config["speed"]["current"]).save(speech_config["speech_file"]["current"])
     mixer.init()
-    mixer.music.load(SPEECH_FILE)
+    mixer.music.load(speech_config["speech_file"]["current"])
     mixer.music.play()
-    sleep(MP3(SPEECH_FILE).info.length)
+    sleep(MP3(speech_config["speech_file"]["current"]).info.length)
 
 
 def print_nato(text):
@@ -81,22 +135,87 @@ def print_nato(text):
     spaced = False
     for c in text.strip():
         if c.lower() in SYMBOLS:
-            nato_show += EMPHASIS + COLOR + " " + SYMBOLS[c.lower()]["nato"] + " " + NORMAL
+            nato_show += text_config["emphasis"]["current"] + text_config["color"]["current"] + " " + \
+                         SYMBOLS[c.lower()]["nato"] + " " + text_config["normal"]["current"]
             nato_speak += " " + SYMBOLS[c.lower()]["nato"] + " "
             spaced = False
         if c.isspace() and not spaced:
             nato_show += "   "
-            nato_speak += PAUSE
+            nato_speak += speech_config["pause"]["current"]
             spaced = True
     print(nato_show.strip())
-    if SPEAK:
-        if MALE:
+    if speech_config["speak"]["current"]:
+        if speech_config["male"]["current"]:
             windows_voice(nato_speak)
         elif nato_speak:
             try:
                 google_voice(nato_speak)
             except (ValueError, RuntimeError):
                 windows_voice(nato_speak)
+
+
+def convert_to_nato(text, option="plain"):
+    """
+    Converts the text into NATO Phonetics and returns a string with the correct format depending on the option.
+
+    The possible options are "plain", "formatted", and "speech"
+    "plain" is the default option and is not required to specify. If any other option is provided it will be
+    treated as "plain".
+
+    If the option is "formatted" then the NATO Phonetics string returned is formatted with the ANSI Escape codes for
+    emphasis, text colors, and background colors configured by the text_config["emphasis"]["current"] and
+    text_config["color"]["current"] configuration parameters.
+    If the option is "speech" then the NATO Phonetics string returned is formatted with the correct characters
+    to be used in a text to speech engine.
+
+    :param text: str :
+        The text that is converted into NATO Phonetics.
+    :param option: str :
+        The options available are "plain" (default), "formatted", or "speech"
+
+    :return: str :
+        The NATO Phonetics string with the correct format depending on the option parameter.
+    """
+    nato_str = ""
+    spaced = False
+    for c in text.strip():
+        if c.lower() in SYMBOLS:
+            if option == "formatted":
+                nato_str += text_config["emphasis"]["current"] + text_config["color"]["current"] + " " + \
+                            SYMBOLS[c.lower()]["nato"] + " " + text_config["normal"]["current"]
+            else:
+                nato_str += " " + SYMBOLS[c.lower()]["nato"] + " "
+            spaced = False
+        if c.isspace() and not spaced:
+            if option == "speech":
+                nato_str += speech_config["pause"]["current"]
+            else:
+                nato_str += "   "
+            spaced = True
+    return nato_str.strip()
+
+
+def speak_nato(text):
+    """
+    Speaks the NATO Phonetics of the text.
+
+    The function converts the text string that is passed to the function into NATO Phonetics and speaks it.
+
+    It is possible to choose between a male or a female voice by setting the configuration parameter
+    speech_config["male"]["current"] to True or False.
+
+    :param text: str :
+        The text that is to be converted into NATO Phonetics and spoken.
+
+    :return:
+    """
+    if speech_config["male"]["current"]:
+        windows_voice(convert_to_nato(text, "speech"))
+    else:
+        try:
+            google_voice(convert_to_nato(text, "speech"))
+        except (ValueError, RuntimeError):
+            windows_voice(convert_to_nato(text, "speech"))
 
 
 def main():
