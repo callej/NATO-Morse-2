@@ -9,6 +9,8 @@ from symbols import SYMBOLS
 EMPHASIS = "\x1b[1m"
 COLOR = "\x1b[38;2;0;0;210;48;2;212;175;55m"
 NORMAL = "\x1b[m"
+CHAR_SEP = " "
+WORD_SEP = "   "
 
 # ***   Speech Properties   *** #
 SPEAK = True
@@ -33,6 +35,14 @@ text_config = {
     "normal": {
         "default": NORMAL,
         "current": NORMAL
+    },
+    "char_sep": {
+        "default": CHAR_SEP,
+        "current": CHAR_SEP
+    },
+    "word_sep": {
+        "default": WORD_SEP,
+        "current": WORD_SEP
     }
 }
 
@@ -181,16 +191,20 @@ def convert_to_nato(text, option="plain"):
     for c in text.strip():
         if c.lower() in SYMBOLS:
             if option == "formatted":
-                nato_str += text_config["emphasis"]["current"] + text_config["color"]["current"] + " " + \
-                            SYMBOLS[c.lower()]["nato"] + " " + text_config["normal"]["current"]
+                nato_str += text_config["emphasis"]["current"] + text_config["color"]["current"] + \
+                            text_config["char_sep"]["current"] + \
+                            SYMBOLS[c.lower()]["nato"] + \
+                            text_config["char_sep"]["current"] + text_config["normal"]["current"]
             else:
-                nato_str += " " + SYMBOLS[c.lower()]["nato"] + " "
+                nato_str += text_config["char_sep"]["current"] + \
+                            SYMBOLS[c.lower()]["nato"] + \
+                            text_config["char_sep"]["current"]
             spaced = False
         if c.isspace() and not spaced:
             if option == "speech":
                 nato_str += speech_config["pause"]["current"]
             else:
-                nato_str += "   "
+                nato_str += text_config["word_sep"]["current"]
             spaced = True
     return nato_str.strip()
 
