@@ -92,7 +92,6 @@ class App(ck.CTk):
 
         # ***** -----     CREATE THE GUI     ----- ***** #
         # Create the grid system
-        # self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(4, weight=2)
 
@@ -102,7 +101,6 @@ class App(ck.CTk):
         self.input_text_label.grid(row=1, column=0, sticky="sw", padx=25, pady=(10, 0))
 
         # Input Textbox
-        # self.text = ck.StringVar(value="Hello")
         self.input_text = ck.CTkTextbox(master=self, font=("Arial", 16))
         self.input_text.grid(row=2, column=0, columnspan=5, padx=20, pady=(5, 10), sticky="nsew")
 
