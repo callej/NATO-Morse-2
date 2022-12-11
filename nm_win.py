@@ -1,11 +1,11 @@
 import tkinter as tk
 import customtkinter as ck
+from nato import convert_to_nato, speak_nato, text_config, speech_config
 
 
 class App(ck.CTk):
-
     WIDTH = 1300
-    HEIGHT = 700
+    HEIGHT = 900
 
     WPM_MIN = 5
     WPM_MAX = 100
@@ -22,6 +22,8 @@ class App(ck.CTk):
         self.title("NATO Phonetics and Morse Code")
         self.iconbitmap("nm_gold_icon.ico")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        self.FONT = tk.font.Font(family="Arial", size=16, weight="bold")
 
         # ***   Create the menu bar   *** #
         menu = tk.Menu()
@@ -90,7 +92,7 @@ class App(ck.CTk):
 
         # ***** -----     CREATE THE GUI     ----- ***** #
         # Create the grid system
-        self.grid_rowconfigure(2, weight=1)
+        # self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(4, weight=2)
 
@@ -100,7 +102,7 @@ class App(ck.CTk):
         self.input_text_label.grid(row=1, column=0, sticky="sw", padx=25, pady=(10, 0))
 
         # Input Textbox
-        self.text = ck.StringVar(value="Hello")
+        # self.text = ck.StringVar(value="Hello")
         self.input_text = ck.CTkTextbox(master=self, font=("Arial", 16))
         self.input_text.grid(row=2, column=0, columnspan=5, padx=20, pady=(5, 10), sticky="nsew")
 
@@ -110,13 +112,9 @@ class App(ck.CTk):
         self.output_text_label.grid(row=3, column=0, sticky="sw", padx=25, pady=(10, 0))
 
         # Output Area
-        self.output_frame = ck.CTkFrame(master=self)
-        self.output_frame.grid(row=4, column=0, columnspan=5, padx=20, pady=(5, 0), sticky="nsew")
-
-        self.nato_text = ck.StringVar(value="")
-        self.nato_output = ck.CTkLabel(master=self.output_frame, text="", text_color="red",
-                                       font=("Arial Bold", 16), textvariable=self.nato_text)
-        self.nato_output.grid(row=0, column=0, columnspan=1, padx=20, pady=20, sticky="nsew")
+        self.nato_output = ck.CTkTextbox(master=self, text_color="white", font=("Arial Bold", 16), state="disabled",
+                                         fg_color="#D4AF37")
+        self.nato_output.grid(row=4, column=0, columnspan=5, padx=20, pady=(5, 0), sticky="nsew")
 
         # ***   NATO Frame   *** #
         # Place the frame & Create the grid system
@@ -195,7 +193,7 @@ class App(ck.CTk):
 
         self.visual_switch = ck.CTkSwitch(master=self.nato_frame, text="", width=50, variable=self.show_phonetics,
                                           switch_width=50,
-                                         offvalue="off", onvalue="on", command=self.visual_change)
+                                          offvalue="off", onvalue="on", command=self.visual_change)
         self.visual_switch.grid(row=7, column=4, sticky="n", padx=(20, 10), pady=(0, 20))
 
         self.on_label = ck.CTkLabel(master=self.nato_frame, text="On", width=0)
@@ -266,7 +264,7 @@ class App(ck.CTk):
 
         self.mvisual_switch = ck.CTkSwitch(master=self.morse_frame, text="", width=50, variable=self.morse_visual,
                                            switch_width=50,
-                                         offvalue="off", onvalue="on", command=self.mvisual_change)
+                                           offvalue="off", onvalue="on", command=self.mvisual_change)
         self.mvisual_switch.grid(row=3, column=4, sticky="n", padx=(20, 10))
 
         self.mon_label = ck.CTkLabel(master=self.morse_frame, text="On", width=0)
@@ -325,7 +323,9 @@ class App(ck.CTk):
 
     def reset(self):
         self.input_text.delete("0.0", "end")
-        self.nato_text.set("")
+        self.nato_output.configure(state="normal")
+        self.nato_output.delete("0.0", "end")
+        self.nato_output.configure(state="disabled")
         self.naudio.set("on")
         self.voice.set("female")
         self.voice_speed.set("normal")
@@ -390,7 +390,29 @@ class App(ck.CTk):
         print("Color Theme")
 
     def nato_conversion(self):
-        print("NATO Conversion")
+        output = ""
+        line = ""
+        for word in convert_to_nato(self.input_text.get("0.0", "end")).split(text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"]):
+            if self.FONT.measure(line + text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word) < self.nato_output.winfo_width() / 1.2:
+                if line:
+                    line += text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word
+                else:
+                    line = word
+            else:
+                if output:
+                    output += "\n" + line
+                else:
+                    output = line
+                line = word
+        if line:
+            if output:
+                output += "\n" + line
+            else:
+                output = line
+        self.nato_output.configure(state="normal")
+        self.nato_output.delete("0.0", "end")
+        self.nato_output.insert("0.0", output)
+        self.nato_output.configure(state="disabled")
 
     def naudio(self):
         print("NATO Audio On/Off")
