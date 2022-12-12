@@ -6,6 +6,7 @@ from time import sleep
 from symbols import SYMBOLS
 
 # ***   Text Properties   *** #
+SHOW = True
 EMPHASIS = "\x1b[1m"
 COLOR = "\x1b[38;2;0;0;210;48;2;212;175;55m"
 NORMAL = "\x1b[m"
@@ -24,6 +25,10 @@ SPEECH_FILE = "speach_tmp.mp3"
 
 # ***   Configuration Dictionaries   *** #
 text_config = {
+    "show": {
+        "default": SHOW,
+        "current": SHOW
+    },
     "emphasis": {
         "default": EMPHASIS,
         "current": EMPHASIS
@@ -116,10 +121,14 @@ def google_voice(text):
          tld=speech_config["dialect"]["current"],
          lang_check=speech_config["lang_check"]["current"],
          slow=speech_config["speed"]["current"]).save(speech_config["speech_file"]["current"])
-    mixer.init()
-    mixer.music.load(speech_config["speech_file"]["current"])
-    mixer.music.play()
-    sleep(MP3(speech_config["speech_file"]["current"]).info.length)
+    with open(speech_config["speech_file"]["current"]) as tts_file:
+        mixer.init()
+        mixer.music.load(speech_config["speech_file"]["current"])
+        mixer.music.play()
+        sleep(MP3(speech_config["speech_file"]["current"]).info.length)
+        mixer.music.stop()
+        mixer.stop()
+        mixer.quit()
 
 
 def print_nato(text):
