@@ -67,7 +67,7 @@ class App(ck.CTk):
         config_menu.add_command(label="Appearance", font=("Sans Serif", 13), command=self.appearance)
         config_menu.add_command(label="Color Theme", font=("Sans Serif", 13), command=self.color_theme)
         config_menu.add_separator()
-        config_menu.add_command(label="NATO Audio", font=("Sans Serif", 13), command=self.naudio)
+        config_menu.add_command(label="NATO Audio", font=("Sans Serif", 13), command=self.naudio_menu_cmd)
         config_menu.add_command(label="NATO Voice", font=("Sans Serif", 13), command=self.voice_change)
         config_menu.add_command(label="NATO Speech Tempo", font=("Sans Serif", 13), command=self.speed_change)
         config_menu.add_command(label="Show NATO Phonetics", font=("Sans Serif", 13), command=self.visual_change)
@@ -388,44 +388,93 @@ class App(ck.CTk):
         print("Color Theme")
 
     def nato_conversion(self):
-        output = ""
-        line = ""
-        for word in convert_to_nato(self.input_text.get("0.0", "end")).split(text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"]):
-            if self.FONT.measure(line + text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word) < self.nato_output.winfo_width() / 1.2:
-                if line:
-                    line += text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word
+        if self.show_phonetics.get() == "on":
+            text_config["show"]["current"] = True
+            output = ""
+            line = ""
+            for word in convert_to_nato(self.input_text.get("0.0", "end")).split(text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"]):
+                if self.FONT.measure(line + text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word) < self.nato_output.winfo_width() / 1.2:
+                    if line:
+                        line += text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word
+                    else:
+                        line = word
                 else:
+                    if output:
+                        output += "\n" + line
+                    else:
+                        output = line
                     line = word
-            else:
+            if line:
                 if output:
                     output += "\n" + line
                 else:
                     output = line
-                line = word
-        if line:
-            if output:
-                output += "\n" + line
-            else:
-                output = line
-        self.nato_output.configure(state="normal")
-        self.nato_output.delete("0.0", "end")
-        self.nato_output.insert("0.0", output)
-        self.nato_output.configure(state="disabled")
+            self.nato_output.configure(state="normal")
+            self.nato_output.delete("0.0", "end")
+            self.nato_output.insert("0.0", output)
+            self.nato_output.update()
+            self.nato_output.configure(state="disabled")
+        else:
+            self.nato_output.configure(state="normal")
+            self.nato_output.delete("0.0", "end")
+            self.nato_output.update()
+            self.nato_output.configure(state="disabled")
+            text_config["show"]["current"] = False
 
-    def naudio(self):
-        print("NATO Audio On/Off")
+        if self.naudio.get() == "on":
+            speech_config["speak"]["current"] = True
+            if self.voice.get() == "male":
+                speech_config["male"]["current"] = True
+            else:
+                speech_config["male"]["current"] = False
+            if self.voice_speed.get() == "slow":
+                speech_config["speed"]["current"] = True
+            else:
+                speech_config["speed"]["current"] = False
+            speak_nato(self.input_text.get("0.0", "end"))
+        else:
+            speech_config["speak"]["current"] = False
+
+    def naudio_menu_cmd(self):
+        if self.naudio.get() == "off":
+            self.naudio.set("on")
+        else:
+            self.naudio.set("off")
+        self.naudio_change()
 
     def naudio_change(self):
-        print(self.naudio.get())
+        if self.naudio.get() == "off":
+            speech_config["speak"]["current"] = False
+        else:
+            speech_config["speak"]["current"] = True
 
     def voice_change(self):
-        print(self.voice.get())
+        if self.voice.get() == "male":
+            speech_config["male"]["current"] = True
+            self.speed_switch.configure(state="disabled")
+            self.speed_switch.grid_forget()
+            self.speed_label.configure(text="")
+            self.slow_label.configure(text="")
+            self.normal_label.configure(text="")
+        else:
+            speech_config["male"]["current"] = False
+            self.speed_switch.configure(state="normal")
+            self.speed_switch.grid(row=5, column=4, sticky="n", padx=(20, 10))
+            self.speed_label.configure(text="Speed")
+            self.slow_label.configure(text="Slow")
+            self.normal_label.configure(text="Normal")
 
     def speed_change(self):
-        print(self.voice_speed.get())
+        if self.voice_speed.get() == "slow":
+            speech_config["speed"]["current"] = True
+        else:
+            speech_config["speed"]["current"] = False
 
     def visual_change(self):
-        print(self.show_phonetics.get())
+        if self.show_phonetics.get() == "off":
+            text_config["show"]["current"] = False
+        else:
+            text_config["show"]["current"] = True
 
     def morse_conversion(self):
         print("Morse Conversion")
