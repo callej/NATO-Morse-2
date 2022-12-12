@@ -15,6 +15,14 @@ class App(ck.CTk):
     TONE_MAX = 15000
     TONE_INIT = 400
 
+    MENU_FONT = ("Sans Serif", 13)
+
+    APPEARANCES = ["system", "dark", "light"]
+    THEMES = ["blue", "dark-blue", "green"]
+
+    APPEARANCE = APPEARANCES[0]
+    THEME = THEMES[0]
+
     def __init__(self):
         super().__init__()
 
@@ -26,69 +34,75 @@ class App(ck.CTk):
         self.FONT = tk.font.Font(family="Arial", size=16, weight="bold")
 
         # ***   Create the menu bar   *** #
-        menu = tk.Menu()
-        self.config(menu=menu)
+        menubar = tk.Menu()
+        self.config(menu=menubar)
 
         # Create the File menu
-        file_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="File", menu=file_menu)
-        file_menu.add_command(label="Save Text & Phonetics", font=("Sans Serif", 13), command=self.save_text_phonetics)
-        file_menu.add_command(label="Save Morse", font=("Sans Serif", 13), command=self.save_morse)
-        file_menu.add_command(label="Save Config", font=("Sans Serif", 13), command=self.save_config)
-        file_menu.add_command(label="Load Config", font=("Sans Serif", 13), command=self.load_config)
-        file_menu.add_command(label="Print", font=("Sans Serif", 13), command=self.print_nm)
+        file_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Save Text & Phonetics", font=self.MENU_FONT, command=self.save_text_phonetics)
+        file_menu.add_command(label="Save Morse", font=self.MENU_FONT, command=self.save_morse)
+        file_menu.add_command(label="Save Config", font=self.MENU_FONT, command=self.save_config)
+        file_menu.add_command(label="Load Config", font=self.MENU_FONT, command=self.load_config)
+        file_menu.add_command(label="Print", font=self.MENU_FONT, command=self.print_nm)
         file_menu.add_separator()
-        file_menu.add_command(label="Exit", font=("Sans Serif", 13), command=self.exit_app)
+        file_menu.add_command(label="Exit", font=self.MENU_FONT, command=self.exit_app)
 
         # Create the Edit menu
-        edit_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Edit", font=("Sans Serif", 13), menu=edit_menu)
-        edit_menu.add_command(label="Cut", font=("Sans Serif", 13), command=self.cut)
-        edit_menu.add_command(label="Copy", font=("Sans Serif", 13), command=self.copy)
-        edit_menu.add_command(label="Paste", font=("Sans Serif", 13), command=self.paste)
-        edit_menu.add_command(label="Delete", font=("Sans Serif", 13), command=self.delete)
+        edit_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Edit", font=self.MENU_FONT, menu=edit_menu)
+        edit_menu.add_command(label="Cut", font=self.MENU_FONT, command=self.cut)
+        edit_menu.add_command(label="Copy", font=self.MENU_FONT, command=self.copy)
+        edit_menu.add_command(label="Paste", font=self.MENU_FONT, command=self.paste)
+        edit_menu.add_command(label="Delete", font=self.MENU_FONT, command=self.delete)
         edit_menu.add_separator()
-        edit_menu.add_command(label="Copy Input Text", font=("Sans Serif", 13), command=self.copy_input)
-        edit_menu.add_command(label="Copy NATO Phonetics", font=("Sans Serif", 13), command=self.copy_nato)
+        edit_menu.add_command(label="Copy Input Text", font=self.MENU_FONT, command=self.copy_input)
+        edit_menu.add_command(label="Copy NATO Phonetics", font=self.MENU_FONT, command=self.copy_nato)
         edit_menu.add_separator()
-        edit_menu.add_command(label="Clear Input Text", font=("Sans Serif", 13), command=self.clear_input)
-        edit_menu.add_command(label="Clear NATO Phonetics", font=("Sans Serif", 13), command=self.clear_nato)
-        edit_menu.add_command(label="Clear All", font=("Sans Serif", 13), command=self.clear_all)
+        edit_menu.add_command(label="Clear Input Text", font=self.MENU_FONT, command=self.clear_input)
+        edit_menu.add_command(label="Clear NATO Phonetics", font=self.MENU_FONT, command=self.clear_nato)
+        edit_menu.add_command(label="Clear All", font=self.MENU_FONT, command=self.clear_all)
 
         # Create the Convert menu
-        convert_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Convert", menu=convert_menu)
-        convert_menu.add_command(label="to NATO Phonetics", font=("Sans Serif", 13), command=self.nato_conversion)
-        convert_menu.add_command(label="to Morse Code", font=("Sans Serif", 13), command=self.morse_conversion)
+        convert_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Convert", menu=convert_menu)
+        convert_menu.add_command(label="to NATO Phonetics", font=self.MENU_FONT, command=self.nato_conversion)
+        convert_menu.add_command(label="to Morse Code", font=self.MENU_FONT, command=self.morse_conversion)
 
         # Create the Config menu
-        config_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Config", menu=config_menu)
-        config_menu.add_command(label="Appearance", font=("Sans Serif", 13), command=self.appearance)
-        config_menu.add_command(label="Color Theme", font=("Sans Serif", 13), command=self.color_theme)
+        config_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Config", menu=config_menu)
+        appearance_sub = tk.Menu(config_menu, tearoff=0)
+        config_menu.add_cascade(label="Appearance", menu=appearance_sub, font=self.MENU_FONT)
+        for a in self.APPEARANCES:
+            appearance_sub.add_command(label=a.title(), font=self.MENU_FONT, command=lambda ap=a: self.appearance(ap))
+        color_theme_sub = tk.Menu(config_menu, tearoff=0)
+        config_menu.add_cascade(label="Color Theme", menu=color_theme_sub, font=self.MENU_FONT)
+        for t in self.THEMES:
+            color_theme_sub.add_command(label=t.title(), font=self.MENU_FONT, command=lambda th=t: self.theme(th))
         config_menu.add_separator()
-        config_menu.add_command(label="NATO Audio", font=("Sans Serif", 13), command=self.naudio_menu_cmd)
-        config_menu.add_command(label="NATO Voice", font=("Sans Serif", 13), command=self.voice_change)
-        config_menu.add_command(label="NATO Speech Tempo", font=("Sans Serif", 13), command=self.speed_change)
-        config_menu.add_command(label="Show NATO Phonetics", font=("Sans Serif", 13), command=self.visual_change)
+        config_menu.add_command(label="NATO Audio", font=self.MENU_FONT, command=self.naudio_menu_cmd)
+        config_menu.add_command(label="NATO Voice", font=self.MENU_FONT, command=self.voice_change)
+        config_menu.add_command(label="NATO Speech Tempo", font=self.MENU_FONT, command=self.speed_change)
+        config_menu.add_command(label="Show NATO Phonetics", font=self.MENU_FONT, command=self.visual_change)
         config_menu.add_separator()
-        config_menu.add_command(label="Morse Audio", font=("Sans Serif", 13), command=self.maudio_change)
-        config_menu.add_command(label="Morse Visual", font=("Sans Serif", 13), command=self.mvisual_change)
-        config_menu.add_command(label="Morse Speed", font=("Sans Serif", 13), command=self.morse_speed)
-        config_menu.add_command(label="Morse Tone", font=("Sans Serif", 13), command=self.morse_tone)
+        config_menu.add_command(label="Morse Audio", font=self.MENU_FONT, command=self.maudio_change)
+        config_menu.add_command(label="Morse Visual", font=self.MENU_FONT, command=self.mvisual_change)
+        config_menu.add_command(label="Morse Speed", font=self.MENU_FONT, command=self.morse_speed)
+        config_menu.add_command(label="Morse Tone", font=self.MENU_FONT, command=self.morse_tone)
         config_menu.add_separator()
-        config_menu.add_command(label="Advanced Settings", font=("Sans Serif", 13), command=self.advanced)
+        config_menu.add_command(label="Advanced Settings", font=self.MENU_FONT, command=self.advanced)
         config_menu.add_separator()
-        config_menu.add_command(label="Reset Settings", font=("Sans Serif", 13), command=self.reset_settings)
-        config_menu.add_command(label="Reset Settings & Clear UI", font=("Sans Serif", 13), command=self.reset_all)
-        config_menu.add_command(label="Factory Reset", font=("Sans Serif", 13), command=self.factory_reset)
+        config_menu.add_command(label="Reset Settings", font=self.MENU_FONT, command=self.reset_settings)
+        config_menu.add_command(label="Reset Settings & Clear UI", font=self.MENU_FONT, command=self.reset_all)
+        config_menu.add_command(label="Factory Reset", font=self.MENU_FONT, command=self.factory_reset)
 
         # Create the Help menu
-        help_menu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label="Help", menu=help_menu)
-        help_menu.add_command(label="Help", font=("Sans Serif", 13), command=self.nm_help)
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="Help", font=self.MENU_FONT, command=self.nm_help)
         help_menu.add_separator()
-        help_menu.add_command(label="About", font=("Sans Serif", 13), command=self.nm_about)
+        help_menu.add_command(label="About", font=self.MENU_FONT, command=self.nm_about)
 
         # ***** -----     CREATE THE GUI     ----- ***** #
         # Create the grid system
@@ -316,8 +330,8 @@ class App(ck.CTk):
 
         # ***** -----   Set initial state   ----- ***** #
         self.reset()
-        ck.set_appearance_mode("System")
-        ck.set_default_color_theme("blue")
+        self.appearance(self.APPEARANCE)
+        self.theme(self.THEME)
 
     def reset(self):
         self.input_text.delete("0.0", "end")
@@ -381,11 +395,13 @@ class App(ck.CTk):
     def clear_all(self):
         print("Clear All")
 
-    def appearance(self):
-        print("Appearance")
+    def appearance(self, appearance):
+        self.APPEARANCE = appearance
+        ck.set_appearance_mode(self.APPEARANCE)
 
-    def color_theme(self):
-        print("Color Theme")
+    def theme(self, th):
+        self.THEME = th
+        ck.set_default_color_theme(self.THEME)
 
     def nato_conversion(self):
         if self.show_phonetics.get() == "on":
