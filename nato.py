@@ -1,3 +1,5 @@
+import string
+
 from win32com.client import Dispatch
 from mutagen.mp3 import MP3
 from gtts import gTTS
@@ -116,19 +118,20 @@ def google_voice(text):
 
     :return: Nothing is returned.
     """
-    gTTS(text,
-         lang=speech_config["lang"]["current"],
-         tld=speech_config["dialect"]["current"],
-         lang_check=speech_config["lang_check"]["current"],
-         slow=speech_config["speed"]["current"]).save(speech_config["speech_file"]["current"])
-    with open(speech_config["speech_file"]["current"]) as tts_file:
-        mixer.init()
-        mixer.music.load(speech_config["speech_file"]["current"])
-        mixer.music.play()
-        sleep(MP3(speech_config["speech_file"]["current"]).info.length)
-        mixer.music.stop()
-        mixer.stop()
-        mixer.quit()
+    if text:
+        gTTS(text,
+             lang=speech_config["lang"]["current"],
+             tld=speech_config["dialect"]["current"],
+             lang_check=speech_config["lang_check"]["current"],
+             slow=speech_config["speed"]["current"]).save(speech_config["speech_file"]["current"])
+        with open(speech_config["speech_file"]["current"]) as tts_file:
+            mixer.init()
+            mixer.music.load(speech_config["speech_file"]["current"])
+            mixer.music.play()
+            sleep(MP3(speech_config["speech_file"]["current"]).info.length)
+            mixer.music.stop()
+            mixer.stop()
+            mixer.quit()
 
 
 def print_nato(text):
