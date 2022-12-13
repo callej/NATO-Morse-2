@@ -51,10 +51,10 @@ class App(ck.CTk):
         # Create the Edit menu
         edit_menu = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="Edit", font=self.MENU_FONT, menu=edit_menu)
-        edit_menu.add_command(label="Cut", font=self.MENU_FONT, command=self.cut)
-        edit_menu.add_command(label="Copy", font=self.MENU_FONT, command=self.copy)
-        edit_menu.add_command(label="Paste", font=self.MENU_FONT, command=self.paste)
-        edit_menu.add_command(label="Delete", font=self.MENU_FONT, command=self.delete)
+        edit_menu.add_command(label="Cut", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Cut>>"))
+        edit_menu.add_command(label="Copy", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Copy>>"))
+        edit_menu.add_command(label="Paste", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Paste>>"))
+        edit_menu.add_command(label="Delete", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<Delete>"))
         edit_menu.add_separator()
         edit_menu.add_command(label="Copy Input Text", font=self.MENU_FONT, command=self.copy_input)
         edit_menu.add_command(label="Copy NATO Phonetics", font=self.MENU_FONT, command=self.copy_nato)
@@ -302,8 +302,13 @@ class App(ck.CTk):
                                         textvariable=self.ms_entry, justify=ck.CENTER)
         self.mspeed_entry.grid(row=7, column=2, sticky="ne", padx=0, pady=(5, 10))
 
+        self.mspeed_entry.bind("<Return>", self.set_mspeed)
+
         self.mspeed_set_button = ck.CTkButton(master=self.morse_frame, text="Set", width=50, command=self.set_mspeed)
         self.mspeed_set_button.grid(row=7, column=3, sticky="nw", padx=(5, 0), pady=(5, 10))
+
+        self.mspeed_reset_button = ck.CTkButton(master=self.morse_frame, text="Reset", width=50, command=self.reset_mspeed)
+        self.mspeed_reset_button.grid(row=7, column=4, sticky="nw", padx=(5, 0), pady=(5, 10))
 
         # Tone Slider
         self.tone = ck.IntVar(value=self.TONE_INIT)
@@ -325,13 +330,19 @@ class App(ck.CTk):
                                        textvariable=self.mt_entry, justify=ck.CENTER)
         self.mtone_entry.grid(row=9, column=2, sticky="ne", padx=0, pady=(5, 20))
 
+        self.mtone_entry.bind("<Return>", self.set_tone)
+
         self.tone_set_button = ck.CTkButton(master=self.morse_frame, text="Set", width=50, command=self.set_tone)
         self.tone_set_button.grid(row=9, column=3, sticky="nw", padx=(5, 0), pady=(5, 20))
 
-        # ***** -----   Set initial state   ----- ***** #
+        self.tone_reset_button = ck.CTkButton(master=self.morse_frame, text="Reset", width=50, command=self.reset_tone)
+        self.tone_reset_button.grid(row=9, column=4, sticky="nw", padx=(5, 0), pady=(5, 20))
+
+        # ***** -----   Set Initial State   ----- ***** #
         self.reset()
         self.appearance(self.APPEARANCE)
         self.theme(self.THEME)
+
 
     def reset(self):
         self.input_text.delete("0.0", "end")
@@ -505,19 +516,33 @@ class App(ck.CTk):
         print(self.wpm.get())
         self.ms_entry.set(str(self.wpm.get()))
 
-    def set_mspeed(self):
-        print("Set mspeed (WPM)")
-        self.wpm.set(int(self.ms_entry.get()))
-        print(self.ms_entry.get())
+    def set_mspeed(self, e=None):
+        try:
+            wpm = max(min(int(self.ms_entry.get()), self.WPM_MAX), self.WPM_MIN)
+            self.wpm.set(wpm)
+            self.ms_entry.set(str(wpm))
+        except ValueError:
+            self.ms_entry.set(str(self.wpm.get()))
+
+    def reset_mspeed(self):
+        self.wpm.set(self.WPM_INIT)
+        self.ms_entry.set(str(self.WPM_INIT))
 
     def mtone_change(self, _):
         print(self.tone.get())
         self.mt_entry.set(str(self.tone.get()))
 
-    def set_tone(self):
-        print("Set Tone")
-        self.tone.set(int(self.mt_entry.get()))
-        print(self.mt_entry.get())
+    def set_tone(self, e=None):
+        try:
+            freq = max(min(int(self.mt_entry.get()), self.TONE_MAX), self.TONE_MIN)
+            self.tone.set(freq)
+            self.mt_entry.set(str(freq))
+        except ValueError:
+            self.mt_entry.set(str(self.tone.get()))
+
+    def reset_tone(self):
+        self.tone.set(self.TONE_INIT)
+        self.mt_entry.set(str(self.TONE_INIT))
 
     def morse_speed(self):
         print("Morse Speed Menu")
