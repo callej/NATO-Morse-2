@@ -74,12 +74,16 @@ class App(ck.CTk):
         menubar.add_cascade(label="Config", menu=config_menu)
         appearance_sub = tk.Menu(config_menu, tearoff=0)
         config_menu.add_cascade(label="Appearance", menu=appearance_sub, font=self.MENU_FONT)
+
+        self.appear = ck.StringVar(value=self.APPEARANCE)
         for a in self.APPEARANCES:
-            appearance_sub.add_command(label=a.title(), font=self.MENU_FONT, command=lambda ap=a: self.appearance(ap))
+            appearance_sub.add_radiobutton(label=a.title(), font=self.MENU_FONT, variable=self.appear, value=a, command=self.appearance)
+
         color_theme_sub = tk.Menu(config_menu, tearoff=0)
         config_menu.add_cascade(label="Color Theme", menu=color_theme_sub, font=self.MENU_FONT)
+        self.color_theme = ck.StringVar(value=self.THEME)
         for t in self.THEMES:
-            color_theme_sub.add_command(label=t.title(), font=self.MENU_FONT, command=lambda th=t: self.theme(th))
+            color_theme_sub.add_radiobutton(label=t.title(), font=self.MENU_FONT, variable=self.color_theme, value=t, command=self.theme)
         config_menu.add_separator()
         config_menu.add_command(label="NATO Audio", font=self.MENU_FONT, command=self.naudio_menu_cmd)
         config_menu.add_command(label="NATO Voice", font=self.MENU_FONT, command=self.voice_change)
@@ -340,8 +344,8 @@ class App(ck.CTk):
 
         # ***** -----   Set Initial State   ----- ***** #
         self.reset()
-        self.appearance(self.APPEARANCE)
-        self.theme(self.THEME)
+        self.appearance()
+        self.theme()
 
 
     def reset(self):
@@ -406,12 +410,12 @@ class App(ck.CTk):
     def clear_all(self):
         print("Clear All")
 
-    def appearance(self, appearance):
-        self.APPEARANCE = appearance
+    def appearance(self):
+        self.APPEARANCE = self.appear.get()
         ck.set_appearance_mode(self.APPEARANCE)
 
-    def theme(self, th):
-        self.THEME = th
+    def theme(self):
+        self.THEME = self.color_theme.get()
         ck.set_default_color_theme(self.THEME)
 
     def nato_conversion(self):
@@ -513,8 +517,8 @@ class App(ck.CTk):
         print(self.morse_visual.get())
 
     def mspeed_change(self, _):
-        print(self.wpm.get())
         self.ms_entry.set(str(self.wpm.get()))
+        self.set_mspeed()
 
     def set_mspeed(self, e=None):
         try:
@@ -529,8 +533,8 @@ class App(ck.CTk):
         self.ms_entry.set(str(self.WPM_INIT))
 
     def mtone_change(self, _):
-        print(self.tone.get())
         self.mt_entry.set(str(self.tone.get()))
+        self.set_tone()
 
     def set_tone(self, e=None):
         try:
