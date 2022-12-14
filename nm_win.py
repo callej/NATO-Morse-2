@@ -1,5 +1,6 @@
 import tkinter as tk
 import customtkinter as ck
+import pyperclip as pc
 from nato import convert_to_nato, speak_nato, text_config, speech_config
 
 
@@ -34,12 +35,12 @@ class App(ck.CTk):
         self.FONT = tk.font.Font(family="Arial", size=16, weight="bold")
 
         # ***   Create the menu bar   *** #
-        menubar = tk.Menu()
-        self.config(menu=menubar)
+        self.menubar = tk.Menu(self, font=self.MENU_FONT)
+        self.config(menu=self.menubar)
 
         # Create the File menu
-        file_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="File", menu=file_menu)
         file_menu.add_command(label="Save Text & Phonetics", font=self.MENU_FONT, command=self.save_text_phonetics)
         file_menu.add_command(label="Save Morse", font=self.MENU_FONT, command=self.save_morse)
         file_menu.add_command(label="Save Config", font=self.MENU_FONT, command=self.save_config)
@@ -49,8 +50,8 @@ class App(ck.CTk):
         file_menu.add_command(label="Exit", font=self.MENU_FONT, command=self.exit_app)
 
         # Create the Edit menu
-        edit_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Edit", font=self.MENU_FONT, menu=edit_menu)
+        edit_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Edit", font=self.MENU_FONT, menu=edit_menu)
         edit_menu.add_command(label="Cut", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Cut>>"))
         edit_menu.add_command(label="Copy", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Copy>>"))
         edit_menu.add_command(label="Paste", font=self.MENU_FONT, command=lambda: self.focus_get().event_generate("<<Paste>>"))
@@ -64,14 +65,14 @@ class App(ck.CTk):
         edit_menu.add_command(label="Clear All", font=self.MENU_FONT, command=self.clear_all)
 
         # Create the Convert menu
-        convert_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Convert", menu=convert_menu)
+        convert_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Convert", menu=convert_menu)
         convert_menu.add_command(label="to NATO Phonetics", font=self.MENU_FONT, command=self.nato_conversion)
         convert_menu.add_command(label="to Morse Code", font=self.MENU_FONT, command=self.morse_conversion)
 
         # Create the Config menu
-        config_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Config", menu=config_menu)
+        config_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Config", menu=config_menu)
         appearance_sub = tk.Menu(config_menu, tearoff=0)
         config_menu.add_cascade(label="Appearance", menu=appearance_sub, font=self.MENU_FONT)
 
@@ -102,8 +103,8 @@ class App(ck.CTk):
         config_menu.add_command(label="Factory Reset", font=self.MENU_FONT, command=self.factory_reset)
 
         # Create the Help menu
-        help_menu = tk.Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu = tk.Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Help", menu=help_menu)
         help_menu.add_command(label="Help", font=self.MENU_FONT, command=self.nm_help)
         help_menu.add_separator()
         help_menu.add_command(label="About", font=self.MENU_FONT, command=self.nm_about)
@@ -123,11 +124,11 @@ class App(ck.CTk):
         self.input_text.grid(row=2, column=0, columnspan=5, padx=20, pady=(5, 10), sticky="nsew")
 
         # ***   Output Text Area   *** #
-        # Output Label
+        # Output Text Label
         self.output_text_label = ck.CTkLabel(master=self, text="NATO Phonetics:", font=("Arial Bold", 16))
         self.output_text_label.grid(row=3, column=0, sticky="sw", padx=25, pady=(10, 0))
 
-        # Output Area
+        # Output Textbox
         self.nato_output = ck.CTkTextbox(master=self, text_color="white", font=("Arial Bold", 16), state="disabled",
                                          fg_color="#D4AF37")
         self.nato_output.grid(row=4, column=0, columnspan=5, padx=20, pady=(5, 0), sticky="nsew")
@@ -349,10 +350,7 @@ class App(ck.CTk):
 
 
     def reset(self):
-        self.input_text.delete("0.0", "end")
-        self.nato_output.configure(state="normal")
-        self.nato_output.delete("0.0", "end")
-        self.nato_output.configure(state="disabled")
+        self.clear_all()
         self.naudio.set("on")
         self.voice.set("female")
         self.voice_speed.set("normal")
@@ -396,19 +394,22 @@ class App(ck.CTk):
         print("Delete")
 
     def copy_input(self):
-        print("Copy Input Text")
+        pc.copy(self.input_text.get("0.0", "end"))
 
     def copy_nato(self):
-        print("Copy NATO Phonetics")
+        pc.copy(self.nato_output.get("0.0", "end"))
 
     def clear_input(self):
-        print("Clear Input Text")
+        self.input_text.delete("0.0", "end")
 
     def clear_nato(self):
-        print("Clear NATO Phonetics")
+        self.nato_output.configure(state="normal")
+        self.nato_output.delete("0.0", "end")
+        self.nato_output.configure(state="disabled")
 
     def clear_all(self):
-        print("Clear All")
+        self.clear_input()
+        self.clear_nato()
 
     def appearance(self):
         self.APPEARANCE = self.appear.get()
