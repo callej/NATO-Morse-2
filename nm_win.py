@@ -1,3 +1,4 @@
+import sys
 import tkinter as tk
 import customtkinter as ck
 import pyperclip as pc
@@ -27,6 +28,33 @@ button_properties = [
     "compound",
     "anchor"
 ]
+
+
+class ThreadExecutor(Thread):
+  def __init__(self, *args, **keywords):
+    Thread.__init__(self, *args, **keywords)
+    self.terminated = False
+  def start(self):
+    self.__run_backup = self.run
+    self.run = self.__run
+    Thread.start(self)
+  def __run(self):
+    sys.settrace(self.globaltrace)
+    self.__run_backup()
+    self.run = self.__run_backup
+  def globaltrace(self, frame, why, arg):
+    if why == 'call':
+      return self.localtrace
+    else:
+      return None
+  def localtrace(self, frame, why, arg):
+    if self.terminated:
+      if why == 'line':
+        raise SystemExit()
+    return self.localtrace
+  def terminate(self):
+    self.terminated = True
+
 
 class App(ck.CTk):
     WIDTH = 1300
@@ -511,14 +539,19 @@ class App(ck.CTk):
             text = self.nato_button.cget("text")
             fg_color = self.nato_button.cget("fg_color")
             hover_color = self.nato_button.cget("hover_color")
-            self.nato_button.configure(text="CANCEL", fg_color="red", hover_color="red")
-            nato_thread = Thread(target=self.do_nato, name="nato")
+            if speech_config["male"]["current"]:
+                self.nato_button.configure(text="CANCEL", fg_color="red", hover_color="red")
+            else:
+                self.nato_button.configure(text="DISABLED", fg_color="gray", hover_color="gray")
+            nato_thread = ThreadExecutor(target=self.do_nato, name="nato")
             nato_monitor = Thread(target=self.alive, args=[nato_thread, self.nato_button, text, fg_color, hover_color], name="nato_monitor")
             nato_thread.start()
             nato_monitor.start()
         else:
-            if "nato" in [thread.name for thread in enumerate()]:
-                print("Cancel NATO Thread")
+            if "nato" in [thread.name for thread in enumerate()] and speech_config["male"]["current"] == True:
+                threads = {thread.name: thread for thread in enumerate()}
+                threads["nato"].terminate()
+                threads["nato"].join()
 
 
     def naudio_menu_cmd(self):
