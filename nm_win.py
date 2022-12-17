@@ -1,8 +1,32 @@
 import tkinter as tk
 import customtkinter as ck
 import pyperclip as pc
+from threading import Thread, active_count, enumerate
+from time import sleep
+from pythoncom import CoInitialize
 from nato import convert_to_nato, speak_nato, text_config, speech_config
 
+button_properties = [
+    "width",
+    "height",
+    "corner_radius",
+    "border_width",
+    "border_spacing",
+    "fg_color",
+    "hover_color",
+    "border_color",
+    "text_color",
+    "text_color_disabled",
+    "text",
+    "font",
+    "textvariable",
+    "image",
+    "state",
+    "hover",
+    "command",
+    "compound",
+    "anchor"
+]
 
 class App(ck.CTk):
     WIDTH = 1300
@@ -26,6 +50,8 @@ class App(ck.CTk):
 
     def __init__(self):
         super().__init__()
+
+        self.nato_thread = Thread(target=self.do_nato)
 
         self.geometry(f'{self.WIDTH}x{self.HEIGHT}')
         self.title("NATO Phonetics and Morse Code")
@@ -363,6 +389,13 @@ class App(ck.CTk):
         self.tone.set(self.TONE_INIT)
         self.mt_entry.set(str(self.TONE_INIT))
 
+    def save_button(self, button):
+        return {prop: button.cget(prop) for prop in button_properties}
+
+    def restore_button(self, button, props):
+        pass
+
+
     def save_text_phonetics(self):
         print("Save Text & Phonetics")
 
@@ -419,7 +452,7 @@ class App(ck.CTk):
         self.THEME = self.color_theme.get()
         ck.set_default_color_theme(self.THEME)
 
-    def nato_conversion(self):
+    def do_nato(self):
         if self.show_phonetics.get() == "on":
             text_config["show"]["current"] = True
             output = ""
@@ -456,6 +489,7 @@ class App(ck.CTk):
         if self.naudio.get() == "on":
             speech_config["speak"]["current"] = True
             if self.voice.get() == "male":
+                CoInitialize()
                 speech_config["male"]["current"] = True
             else:
                 speech_config["male"]["current"] = False
@@ -466,6 +500,26 @@ class App(ck.CTk):
             speak_nato(self.input_text.get("0.0", "end"))
         else:
             speech_config["speak"]["current"] = False
+
+    def alive(self, thread: Thread, button, text, fg, hover):
+        while thread.is_alive():
+            sleep(0.1)
+        button.configure(text=text, fg_color=fg, hover_color=hover)
+
+    def nato_conversion(self):
+        if active_count() == 1:
+            text = self.nato_button.cget("text")
+            fg_color = self.nato_button.cget("fg_color")
+            hover_color = self.nato_button.cget("hover_color")
+            self.nato_button.configure(text="CANCEL", fg_color="red", hover_color="red")
+            nato_thread = Thread(target=self.do_nato, name="nato")
+            nato_monitor = Thread(target=self.alive, args=[nato_thread, self.nato_button, text, fg_color, hover_color], name="nato_monitor")
+            nato_thread.start()
+            nato_monitor.start()
+        else:
+            if "nato" in [thread.name for thread in enumerate()]:
+                print("Cancel NATO Thread")
+
 
     def naudio_menu_cmd(self):
         if self.naudio.get() == "off":
