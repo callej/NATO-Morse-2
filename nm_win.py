@@ -5,7 +5,7 @@ import pyperclip as pc
 from threading import Thread, active_count, enumerate
 from time import sleep
 from pythoncom import CoInitialize
-from nato import convert_to_nato, speak_nato, text_config, speech_config
+from nato import convert_to_nato, speak_nato, nato_text_config, nato_speech_config
 
 button_properties = [
     "width",
@@ -482,13 +482,13 @@ class App(ck.CTk):
 
     def do_nato(self):
         if self.show_phonetics.get() == "on":
-            text_config["show"]["current"] = True
+            nato_text_config["show"]["current"] = True
             output = ""
             line = ""
-            for word in convert_to_nato(self.input_text.get("0.0", "end")).split(text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"]):
-                if self.FONT.measure(line + text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word) < self.nato_output.winfo_width() / 1.2:
+            for word in convert_to_nato(self.input_text.get("0.0", "end")).split(nato_text_config["word_sep"]["current"] + 2 * nato_text_config["char_sep"]["current"]):
+                if self.FONT.measure(line + nato_text_config["word_sep"]["current"] + 2 * nato_text_config["char_sep"]["current"] + word) < self.nato_output.winfo_width() / 1.2:
                     if line:
-                        line += text_config["word_sep"]["current"] + 2 * text_config["char_sep"]["current"] + word
+                        line += nato_text_config["word_sep"]["current"] + 2 * nato_text_config["char_sep"]["current"] + word
                     else:
                         line = word
                 else:
@@ -512,22 +512,22 @@ class App(ck.CTk):
             self.nato_output.delete("0.0", "end")
             self.nato_output.update()
             self.nato_output.configure(state="disabled")
-            text_config["show"]["current"] = False
+            nato_text_config["show"]["current"] = False
 
         if self.naudio.get() == "on":
-            speech_config["speak"]["current"] = True
+            nato_speech_config["speak"]["current"] = True
             if self.voice.get() == "male":
                 CoInitialize()
-                speech_config["male"]["current"] = True
+                nato_speech_config["male"]["current"] = True
             else:
-                speech_config["male"]["current"] = False
+                nato_speech_config["male"]["current"] = False
             if self.voice_speed.get() == "slow":
-                speech_config["speed"]["current"] = True
+                nato_speech_config["speed"]["current"] = True
             else:
-                speech_config["speed"]["current"] = False
+                nato_speech_config["speed"]["current"] = False
             speak_nato(self.input_text.get("0.0", "end"))
         else:
-            speech_config["speak"]["current"] = False
+            nato_speech_config["speak"]["current"] = False
 
     def alive(self, thread: Thread, button, text, fg, hover):
         while thread.is_alive():
@@ -539,7 +539,7 @@ class App(ck.CTk):
             text = self.nato_button.cget("text")
             fg_color = self.nato_button.cget("fg_color")
             hover_color = self.nato_button.cget("hover_color")
-            if speech_config["male"]["current"]:
+            if nato_speech_config["male"]["current"]:
                 self.nato_button.configure(text="CANCEL", fg_color="red", hover_color="red")
             else:
                 self.nato_button.configure(text="DISABLED", fg_color="gray", hover_color="gray")
@@ -548,7 +548,7 @@ class App(ck.CTk):
             nato_thread.start()
             nato_monitor.start()
         else:
-            if "nato" in [thread.name for thread in enumerate()] and speech_config["male"]["current"] == True:
+            if "nato" in [thread.name for thread in enumerate()] and nato_speech_config["male"]["current"] == True:
                 threads = {thread.name: thread for thread in enumerate()}
                 threads["nato"].terminate()
                 threads["nato"].join()
@@ -563,20 +563,20 @@ class App(ck.CTk):
 
     def naudio_change(self):
         if self.naudio.get() == "off":
-            speech_config["speak"]["current"] = False
+            nato_speech_config["speak"]["current"] = False
         else:
-            speech_config["speak"]["current"] = True
+            nato_speech_config["speak"]["current"] = True
 
     def voice_change(self):
         if self.voice.get() == "male":
-            speech_config["male"]["current"] = True
+            nato_speech_config["male"]["current"] = True
             self.speed_switch.configure(state="disabled")
             self.speed_switch.grid_forget()
             self.speed_label.configure(text="")
             self.slow_label.configure(text="")
             self.normal_label.configure(text="")
         else:
-            speech_config["male"]["current"] = False
+            nato_speech_config["male"]["current"] = False
             self.speed_switch.configure(state="normal")
             self.speed_switch.grid(row=5, column=4, sticky="n", padx=(20, 10))
             self.speed_label.configure(text="Speed")
@@ -585,15 +585,15 @@ class App(ck.CTk):
 
     def speed_change(self):
         if self.voice_speed.get() == "slow":
-            speech_config["speed"]["current"] = True
+            nato_speech_config["speed"]["current"] = True
         else:
-            speech_config["speed"]["current"] = False
+            nato_speech_config["speed"]["current"] = False
 
     def visual_change(self):
         if self.show_phonetics.get() == "off":
-            text_config["show"]["current"] = False
+            nato_text_config["show"]["current"] = False
         else:
-            text_config["show"]["current"] = True
+            nato_text_config["show"]["current"] = True
 
     def morse_conversion(self):
         print("Morse Conversion")

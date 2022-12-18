@@ -26,7 +26,7 @@ PAUSE = ","
 SPEECH_FILE = "speach_tmp.mp3"
 
 # ***   Configuration Dictionaries   *** #
-text_config = {
+nato_text_config = {
     "show": {
         "default": SHOW,
         "current": SHOW
@@ -53,7 +53,7 @@ text_config = {
     }
 }
 
-speech_config = {
+nato_speech_config = {
     "speak": {
         "default": SPEAK,
         "current": SPEAK
@@ -102,7 +102,7 @@ def windows_voice(text):
     :return: Nothing is returned.
     """
     speak = Dispatch("SAPI.SpVoice")
-    for word in text.split(speech_config["pause"]["current"]):
+    for word in text.split(nato_speech_config["pause"]["current"]):
         speak.Speak(word)
 
 
@@ -120,15 +120,15 @@ def google_voice(text):
     """
     if text:
         gTTS(text,
-             lang=speech_config["lang"]["current"],
-             tld=speech_config["dialect"]["current"],
-             lang_check=speech_config["lang_check"]["current"],
-             slow=speech_config["speed"]["current"]).save(speech_config["speech_file"]["current"])
-        with open(speech_config["speech_file"]["current"]) as tts_file:
+             lang=nato_speech_config["lang"]["current"],
+             tld=nato_speech_config["dialect"]["current"],
+             lang_check=nato_speech_config["lang_check"]["current"],
+             slow=nato_speech_config["speed"]["current"]).save(nato_speech_config["speech_file"]["current"])
+        with open(nato_speech_config["speech_file"]["current"]) as tts_file:
             mixer.init()
-            mixer.music.load(speech_config["speech_file"]["current"])
+            mixer.music.load(nato_speech_config["speech_file"]["current"])
             mixer.music.play()
-            sleep(MP3(speech_config["speech_file"]["current"]).info.length)
+            sleep(MP3(nato_speech_config["speech_file"]["current"]).info.length)
             mixer.music.stop()
             mixer.stop()
             mixer.quit()
@@ -157,17 +157,17 @@ def print_nato(text):
     spaced = False
     for c in text.strip():
         if c.lower() in SYMBOLS:
-            nato_show += text_config["emphasis"]["current"] + text_config["color"]["current"] + " " + \
-                         SYMBOLS[c.lower()]["nato"] + " " + text_config["normal"]["current"]
+            nato_show += nato_text_config["emphasis"]["current"] + nato_text_config["color"]["current"] + " " + \
+                         SYMBOLS[c.lower()]["nato"] + " " + nato_text_config["normal"]["current"]
             nato_speak += " " + SYMBOLS[c.lower()]["nato"] + " "
             spaced = False
         if c.isspace() and not spaced:
             nato_show += "   "
-            nato_speak += speech_config["pause"]["current"]
+            nato_speak += nato_speech_config["pause"]["current"]
             spaced = True
     print(nato_show.strip())
-    if speech_config["speak"]["current"]:
-        if speech_config["male"]["current"]:
+    if nato_speech_config["speak"]["current"]:
+        if nato_speech_config["male"]["current"]:
             windows_voice(nato_speak)
         elif nato_speak:
             try:
@@ -203,20 +203,20 @@ def convert_to_nato(text, option="plain"):
     for c in text.strip():
         if c.lower() in SYMBOLS:
             if option == "formatted":
-                nato_str += text_config["emphasis"]["current"] + text_config["color"]["current"] + \
-                            text_config["char_sep"]["current"] + \
+                nato_str += nato_text_config["emphasis"]["current"] + nato_text_config["color"]["current"] + \
+                            nato_text_config["char_sep"]["current"] + \
                             SYMBOLS[c.lower()]["nato"] + \
-                            text_config["char_sep"]["current"] + text_config["normal"]["current"]
+                            nato_text_config["char_sep"]["current"] + nato_text_config["normal"]["current"]
             else:
-                nato_str += text_config["char_sep"]["current"] + \
+                nato_str += nato_text_config["char_sep"]["current"] + \
                             SYMBOLS[c.lower()]["nato"] + \
-                            text_config["char_sep"]["current"]
+                            nato_text_config["char_sep"]["current"]
             spaced = False
         if c.isspace() and not spaced:
             if option == "speech":
-                nato_str += speech_config["pause"]["current"]
+                nato_str += nato_speech_config["pause"]["current"]
             else:
-                nato_str += text_config["word_sep"]["current"]
+                nato_str += nato_text_config["word_sep"]["current"]
             spaced = True
     return nato_str.strip()
 
@@ -235,7 +235,7 @@ def speak_nato(text):
 
     :return:
     """
-    if speech_config["male"]["current"]:
+    if nato_speech_config["male"]["current"]:
         windows_voice(convert_to_nato(text, "speech"))
     else:
         try:
