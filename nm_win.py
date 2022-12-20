@@ -6,6 +6,7 @@ from threading import Thread, active_count, enumerate
 from time import sleep
 from pythoncom import CoInitialize
 from nato import convert_to_nato, speak_nato, nato_text_config, nato_speech_config
+from morse import send_morse
 
 button_properties = [
     "width",
@@ -535,7 +536,7 @@ class App(ck.CTk):
         button.configure(text=text, fg_color=fg, hover_color=hover)
 
     def nato_conversion(self):
-        if active_count() == 1:
+        if "nato" not in [thread.name for thread in enumerate()]:
             text = self.nato_button.cget("text")
             fg_color = self.nato_button.cget("fg_color")
             hover_color = self.nato_button.cget("hover_color")
@@ -548,7 +549,7 @@ class App(ck.CTk):
             nato_thread.start()
             nato_monitor.start()
         else:
-            if "nato" in [thread.name for thread in enumerate()] and nato_speech_config["male"]["current"] == True:
+            if nato_speech_config["male"]["current"]:
                 threads = {thread.name: thread for thread in enumerate()}
                 threads["nato"].terminate()
                 threads["nato"].join()
@@ -595,8 +596,23 @@ class App(ck.CTk):
         else:
             nato_text_config["show"]["current"] = True
 
+    def do_morse(self):
+        send_morse(self.input_text.get("0.0", "end"))
+
     def morse_conversion(self):
-        print("Morse Conversion")
+        if "morse" not in [thread.name for thread in enumerate()]:
+            text = self.morse_button.cget("text")
+            fg_color = self.morse_button.cget("fg_color")
+            hover_color = self.morse_button.cget("hover_color")
+            self.morse_button.configure(text="CANCEL", fg_color="red", hover_color="red")
+            morse_thread = ThreadExecutor(target=self.do_morse, name="morse")
+            morse_monitor = Thread(target=self.alive, args=[morse_thread, self.morse_button, text, fg_color, hover_color], name="morse_monitor")
+            morse_thread.start()
+            morse_monitor.start()
+        else:
+            threads = {thread.name: thread for thread in enumerate()}
+            threads["morse"].terminate()
+            threads["morse"].join()
 
     def maudio_change(self):
         print(self.morse_audio.get())
