@@ -1,4 +1,5 @@
 import sys
+import copy
 import tkinter as tk
 import customtkinter as ck
 import pyperclip as pc
@@ -424,6 +425,26 @@ class App(ck.CTk):
     def restore_button(self, button, props):
         pass
 
+    def save_widget_state(self, widget: ck.windows.widgets) -> dict:
+        return {attribute: widget.__dict__[attribute] for attribute in widget.__dict__}
+
+    def restore_widget_state(self, widget: ck.windows.widgets, state: dict):
+        widget.__dict__ = state
+
+    def save_state(self, obj: object) -> dict:
+        if hasattr(obj, "__dict__") and obj.__dict__:
+            state = {attribute: obj.__dict__[attribute] for attribute in obj.__dict__}
+            for attribute in obj.__dict__:
+                if hasattr(state[attribute], "__dict__"):
+                    try:
+                        temp = self.save_state(obj.__dict__[attribute])
+                    except AttributeError:
+                        continue
+                    state[attribute].__dict__ = temp
+            return state
+
+    def restore_state(self, obj: object, state: dict):
+        obj.__dict__ = state
 
     def save_text_phonetics(self):
         print("Save Text & Phonetics")
@@ -553,7 +574,6 @@ class App(ck.CTk):
                 threads = {thread.name: thread for thread in enumerate()}
                 threads["nato"].terminate()
                 threads["nato"].join()
-
 
     def naudio_menu_cmd(self):
         if self.naudio.get() == "off":
